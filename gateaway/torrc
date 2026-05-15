@@ -1,0 +1,32 @@
+# ============================================================
+# etc/tor/torrc
+# Tor Transparent Gateway — torrc
+# Gateway: Debian (192.168.100.2)
+# Client:  Arch Linux (192.168.100.51)
+# ============================================================
+
+# --- SOCKS Proxy для LAN ---
+# Клієнти в мережі 192.168.100.0/24 можуть явно використовувати
+# цей порт як SOCKS5 proxy (наприклад curl --proxy socks5h://...)
+SocksPort 192.168.100.2:9050
+
+# Дозволяємо з'єднання тільки з LAN і localhost
+# Всі інші — відхиляємо
+SocksPolicy accept 192.168.100.0/24
+SocksPolicy accept 127.0.0.1
+SocksPolicy reject *
+
+# --- Transparent Proxy ---
+# iptables перенаправляє весь TCP трафік з LAN на цей порт
+# Клієнт не знає що його трафік іде через Tor
+TransPort 192.168.100.2:9040
+
+# --- DNS через Tor ---
+# iptables перенаправляє всі DNS запити (порт 53) сюди
+# Це запобігає DNS leak — запити не йдуть відкрито
+DNSPort 192.168.100.2:5353
+
+# --- Локальний SOCKS для самого Debian ---
+# Для тестування прямо на gateway
+# curl --socks5-hostname 127.0.0.1:9050 https://check.torproject.org
+SocksPort 127.0.0.1:9050
