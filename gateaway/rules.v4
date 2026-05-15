@@ -1,0 +1,55 @@
+# ============================================================
+# etc/iptables/rules.v4
+# iptables rules — Tor Transparent Gateway
+# Gateway: Debian (192.168.100.2)
+# Client:  Arch Linux (192.168.100.51)
+# ============================================================
+
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Дозволяємо ICMP (ping)
+-A INPUT -p icmp -j ACCEPT
+
+# Forwarding з LAN (enp7s0) в інтернет (enp1s0)
+-A FORWARD -i enp7s0 -o enp1s0 -j ACCEPT
+
+# Дозволяємо відповіді на вже встановлені з'єднання
+-A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+# Дозволяємо весь трафік з LAN
+-A FORWARD -i enp7s0 -j ACCEPT
+
+COMMIT
+
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+
+# --- PREROUTING ---
+# Не чіпаємо явні з'єднання до Tor SOCKS портів
+-A PREROUTING -d 192.168.100.2/32 -i enp7s0 -p tcp --dport 9050 -j RETURN
+-A PREROUTING -d 192.168.100.2/32 -i enp7s0 -p tcp --dport 9040 -j RETURN
+
+# DNS redirect: всі запити на порт 53 → Tor DNSPort (5353)
+# Запобігає DNS leak
+-A PREROUTING -i enp7s0 -p udp --dport 53 -j REDIRECT --to-ports 5353
+
+# Transparent proxy: весь TCP трафік з LAN → Tor TransPort (9040)
+# Клієнт не знає що його трафік іде через Tor
+-A PREROUTING -i enp7s0 -p tcp --syn -j REDIRECT --to-ports 9040
+
+# --- OUTPUT ---
+# Трафік самого Tor процесу не редіректимо (uid 102 = debian-tor)
+# Інакше буде нескінченний loop
+-A OUTPUT -m owner --uid-owner 102 -j RETURN
+
+# --- POSTROUTING ---
+# NAT для виходу в інтернет через enp1s0 (WAN інтерфейс)
+-A POSTROUTING -o enp1s0 -j MASQUERADE
+
+COMMIT
