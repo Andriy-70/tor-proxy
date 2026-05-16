@@ -17,7 +17,7 @@
 
 | Listening Ports | iptables Rules |
 |-----------------|----------------|
-| ![ports](screenshots/ports.png) | ![iptables](screenshots/iptables_check.png) |
+| ![ports](screenshots/ports.png) | ![iptables](screenshots/iptables.png) |
 
 ---
 
@@ -28,16 +28,16 @@
 │                        Linux Mint (Host)                         │
 │                        QEMU/KVM + virt-manager                   │
 │                                                                  │
-│   ┌─────────────────────┐       ┌──────────────────────────┐    │
-│   │    Arch Linux       │       │     Debian 13            │    │
-│   │    (Client)         │       │     (Gateway)            │    │
-│   │                     │  LAN  │                          │    │
-│   │  192.168.100.51 ◄───┼───────┼─► 192.168.100.2 (LAN)   │    │
-│   │                     │       │   192.168.122.31 (WAN)   │    │
-│   │  All traffic goes   │       │                          │    │
-│   │  through Tor        │       │   Tor 0.4.9.6            │    │
-│   │  automatically      │       │   iptables redirect      │    │
-│   └─────────────────────┘       └────────────┬─────────────┘    │
+│   ┌─────────────────────┐       ┌──────────────────────────┐     │
+│   │    Arch Linux       │       │     Debian 13            │     │
+│   │    (Client)         │       │     (Gateway)            │     │
+│   │                     │  LAN  │                          │     │
+│   │  192.168.100.51 ◄───┼───────┼─► 192.168.100.2 (LAN)    │     │
+│   │                     │       │   192.168.122.31 (WAN)   │     │
+│   │  All traffic goes   │       │                          │     │
+│   │  through Tor        │       │   Tor 0.4.9.6            │     │
+│   │  automatically      │       │   iptables redirect      │     │
+│   └─────────────────────┘       └────────────┬─────────────┘     │
 │                                              │                   │
 └──────────────────────────────────────────────┼───────────────────┘
                                                │ WAN (NAT)
