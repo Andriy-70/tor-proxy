@@ -17,7 +17,7 @@
 
 | Listening Ports | iptables Rules |
 |-----------------|----------------|
-| ![ports](screenshots/ports.png) | ![iptables](screenshots/iptables.png) |
+| ![ports](screenshots/ports.png) | ![iptables](screenshots/iptables_check.png) |
 
 ---
 
